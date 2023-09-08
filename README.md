@@ -2,8 +2,12 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
+`devtools::install_github("sjgknight/ericr")`
+
 Follows guidance at https://colinfay.me/build-api-wrapper-package-r/
 And https://ropensci.org/blog/2022/06/16/publicize-api-client-yes-no/ 
+(or, at least, they were very helpful and any errors are my own)
+
 
 Using ERIC API documented at https://eric.ed.gov/?api#/default/get_eric_ 
 
