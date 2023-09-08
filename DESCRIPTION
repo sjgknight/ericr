@@ -1,0 +1,24 @@
+Package: ericr
+Title: Package to connect to ERIC API with R
+Version: 0.0.0.9000
+Authors@R: 
+    person("Simon", "Knight", , "sjgknight@gmail.com", role = c("cre", "aut"))
+Description: Package wraps the Education Resources Information Center
+    (ERIC) API for R.
+License: MIT + file LICENSE
+URL: http://github.com/sjgknight/ericr
+BugReports: http://github.com/sjgknight/ericr
+Imports: 
+    attempt,
+    curl,
+    httr,
+    jsonlite,
+    glue,
+    purrr
+desc_add_orcid: ('0000-0002-2815-0399', given = 'Simon', family =
+    'Knight')
+Encoding: UTF-8
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
