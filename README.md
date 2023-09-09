@@ -20,9 +20,16 @@ A first attempt at a package, it is very rough...
 It would be useful to extend by:
 
 1. Adjusting the search approach to a different incremental method (ideally one that would allow updating by date, without adjusting the query)
-2. Would facilitate search structures that are irritating to run manually, e.g. ERIC has no 'Title-Abstract-Keyword' search, but this could be done (inefficiently) programmatically and results combined
+2. Would facilitate search structures that are irritating to run manually, e.g. ERIC has no 'Title-Abstract-Keyword' search, but this could be done (inefficiently) programmatically and results combined/through the define_query function which could take TAK as a field and correctly create the Boolean (Title:[terms] OR Abstract:[terms] OR Keyword:[terms], for each comma separated term-phrase provided)
 3. Modify the functions for specifying Boolean logic between query elements (ERIC 'advanced search' is not particularly intuitive in the UI so this seems like a thing that could be made easier in a package. The proquest UI to ERIC is easier)
 4. General tidying up of code...
+
+x <- list(TAK = c("hello world", "second one"))
+purrr::map(x$TAK, function(.x){
+    mytak <- list(Title = .x, Abstract = .x, Keyword = .x)
+    mytak <- paste0(names(mytak), ":", mytak, collapse = " OR ")
+    paste0("(", mytak ,")")}) |>
+    paste0(collapse = " AND ")
 
 Then build it with:
 devtools::check()
