@@ -10,15 +10,24 @@ URL: http://github.com/sjgknight/ericr
 BugReports: http://github.com/sjgknight/ericr
 Imports: 
     attempt,
+    cli,
     curl,
-    httr,
-    jsonlite,
+    dplyr,
     glue,
-    purrr
+    httr,
+    httr2,
+    jsonlite,
+    purrr,
+    rlang,
+    tibble
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3
 desc_add_orcid: ('0000-0002-2815-0399', given = 'Simon', family =
     'Knight')
 Encoding: UTF-8
-RoxygenNote: 7.2.3
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+RoxygenNote: 7.3.3

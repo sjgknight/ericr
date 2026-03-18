@@ -1,0 +1,172 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# ericr
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+
+The goal of ericr is to query the ERIC database. It adds some functions to emulate a Title Abstract Keyword (TAK) query (which ERIC doesn't have a function for).
+
+## Installation
+
+You can install the development version of ericr from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("sjgknight/ericr")
+devtools::install_github("sjgknight/ericr")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(ericr)
+## basic example code
+```
+
+## Background
+
+ERIC is a long-running database of education research, maintained by the US Institute of Education Sciences (IES). It includes both peer-reviewed journal articles and grey literature (reports, policy documents, conference papers, etc.). ERIC nearly lost funding in 2025, and may still be at risk. 
+
+Using ERIC API documented at:
+- ERIC API:     https://eric.ed.gov/?api
+- Swagger docs: https://api.ies.ed.gov/eric/swagger-ui/
+
+For Python check: https://eric.ed.gov/pdf/Using_ERIC_API_for_Research_Topics.pdf
+
+QUERY SYNTAX:
+   The ERIC API uses a Solr-style query syntax in the `search` parameter.
+   Fields are scoped with field:value syntax, e.g. title:"AI" author:"Knight"
+   Boolean operators: AND OR NOT (uppercase required)
+   Phrase search: "artificial intelligence"
+
+
+
+### Package development 
+
+Package follows guidance at: 
+- https://colinfay.me/build-api-wrapper-package-r/
+- And https://ropensci.org/blog/2022/06/16/publicize-api-client-yes-no/ 
+(or, at least, they were very helpful and any errors are my own)
+
+See for an alternative approach to the functions: https://httr2.r-lib.org/articles/wrapping-apis.html 
+
+
+In dev build with:
+
+`attachment::att_amend_desc()` 
+
+`devtools::check()`
+
+`devtools::build()`
+
+`usethis::use_testthat()`
+
+`usethis::use_vignette("{your-package-name}")`
+
+`usethis::use_readme_rmd()`
+
+`devtools::build()`
+
+## Example use
+
+```{r examples}
+
+# This search is:
+## phrase search (quoted) for "artificial intelligence", 
+## from any source with 'policy' in it, 
+## and is not peer reviewed
+## returning 100 rows
+
+results <- eric_search(
+     search       = '"artificial intelligence"',
+     source       = "policy",
+     peerreviewed = FALSE,
+     rows         = 100
+   )
+
+  # -- Basic search -----------------------------------------------------------
+  # NOTE: free-text search uses AND between words, NOT quoted phrases.
+  # Quoted phrases only work in field-scoped searches (title=, author=, etc.)
+  results <- eric_search(
+    search = "artificial AND intelligence",
+    rows   = 100L
+  )
+  # Or scope to title where phrases are supported:
+  results_title <- eric_search(
+    title = '"artificial intelligence"'
+  )
+  dplyr::glimpse(results)
+
+  # -- Peer-reviewed only, AI + education 
+  # (you can't do this just without specifying a field, title here)
+  -------------------------------------
+  peer_results <- eric_search(
+    title       = '"artificial intelligence" AND education',
+    peerreviewed = TRUE,
+    rows         = 200L,
+    max_results  = 1000L
+  )
+
+  # -- Documents with law/policy identifiers ----------------------------------
+  policy_docs <- eric_search(
+    search         = '"artificial intelligence"',
+    has_policy_law = TRUE,
+    max_results    = 200L
+  )
+  # See what laws/policies are referenced
+  policy_docs |>
+    dplyr::filter(!is.na(identifierslaw)) |>
+    dplyr::select(title, publicationdateyear, identifierslaw)
+
+  # -- TAK search (title OR abstract OR keyword) ------------------------------
+  tak_query <- eric_tak(
+    terms = c("artificial intelligence", "generative AI"),
+    extra = "peerreviewed:F"
+  )
+  tak_results <- eric_search(.query = tak_query, max_results = 500L)
+
+  # -- Specific grey lit source -----------------------------------------------
+  cpre_results <- eric_search(
+    search = '"education policy"',
+    source = '"Consortium for Policy Research in Education"'
+  )
+
+  # -- AI policy specifically -- combining approaches -------------------------
+  ai_policy <- eric_search(
+    .query = eric_build_query(
+      search         = '"artificial intelligence"',
+      source         = "policy",
+      peerreviewed   = FALSE,
+      has_policy_law = TRUE
+    ),
+    max_results = 500L,
+    rows        = 200L
+  )
+
+  # -- Export -----------------------------------------------------------------
+  readr::write_csv(results, "eric_results.csv")
+
+
+
+```
+
+
+

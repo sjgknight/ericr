@@ -19,4 +19,27 @@ check_status <- function(res) {
 # Follows guidance at https://colinfay.me/build-api-wrapper-package-r/
 
 # searches of form httr::GET(base_url, query = list(search="test"))
+# =============================================================================
+# INTERNAL HELPERS
+# =============================================================================
 
+# redundant null coalescing operator, available in R since 4.4.0, Claude consistently adds it.
+`%||%` <- function(x, y) if (!is.null(x)) x else y
+
+.chr <- function(x) {
+  if (is.null(x) || length(x) == 0L) return(NA_character_)
+  as.character(x[[1L]])
+}
+
+.int <- function(x) {
+  if (is.null(x) || length(x) == 0L) return(NA_integer_)
+  as.integer(x[[1L]])
+}
+
+#' Check internet connectivity (internal)
+#' @noRd
+.check_internet <- function() {
+  if (!curl::has_internet()) {
+    cli::cli_abort("No internet connection detected.")
+  }
+}
